@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연금복권 720+ 데이터 분석 추천기</title>
+    <style>
+        :root {
+            --color-group: #555;   /* 조 - 회색 */
+            --color-100k: #ff9d00; /* 10만 - 주황 */
+            --color-10k: #00a2ff;  /* 만 - 파랑 */
+            --color-1k: #ff4b4b;   /* 천 - 빨강 */
+            --color-100: #8e44ad;  /* 백 - 보라 */
+            --color-10: #27ae60;   /* 십 - 초록 */
+            --color-1: #34495e;    /* 일 - 남색 */
+        }
+
+        body { font-family: 'Pretendard', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 500px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 25px; }
+        
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-1 { background: #e0e0e0; }
+        .btn-5 { background: #d0e8ff; }
+        .btn-10 { background: #ffd0d0; }
+        button:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        #result-area { display: flex; flex-direction: column; gap: 15px; }
+        .ticket { display: flex; justify-content: space-around; align-items: center; padding: 15px; background: #fafafa; border: 1px solid #eee; border-radius: 12px; }
+        .ball { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        .label { font-size: 10px; color: #888; text-align: center; margin-bottom: 5px; }
+        .ball.group { background: var(--color-group); }
+        .ball.n100k { background: var(--color-100k); }
+        .ball.n10k { background: var(--color-10k); }
+        .ball.n1k { background: var(--color-1k); }
+        .ball.n100 { background: var(--color-100); }
+        .ball.n10 { background: var(--color-10); }
+        .ball.n1 { background: var(--color-1); }
+
+        .group-tag { font-weight: bold; color: #555; margin-right: 5px; }
+        .trace-effect { animation: flash 0.5s ease-out; }
+        @keyframes flash { from { opacity: 0.5; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🍀 연금복권 데이터 추천기</h2>
+    
+    <div class="btn-group">
+        <button class="btn-1" onclick="generateTickets(1)">1개 추천</button>
+        <button class="btn-5" onclick="generateTickets(5)">5개 추천</button>
+        <button class="btn-10" onclick="generateTickets(10)">10개 추천</button>
+    </div>
+
+    <div id="result-area">
+        </div>
+</div>
+
+<script>
+    /**
+     * 역대 당첨 데이터 통계 기반 가중치 데이터 (자주 나오는 숫자 반영)
+     * 예시 데이터: 실제 통계에 따라 상위 빈도 숫자를 배열 내에 중복 배치하여 확률 조정
+     */
+    const stats = {
+        group: [1, 2, 3, 4, 5], // 조는 균등 확률
+        n100k: [0, 1, 1, 2, 3, 5, 7, 7, 8, 9], // 예: 1과 7이 자주 나옴
+        n10k:  [1, 2, 4, 4, 5, 6, 8, 8, 8, 0], // 예: 8이 매우 자주 나옴
+        n1k:   [2, 2, 3, 5, 5, 6, 7, 9, 0, 0],
+        n100:  [1, 3, 3, 4, 5, 7, 7, 8, 9, 0],
+        n10:   [0, 1, 2, 4, 4, 5, 6, 8, 9, 9],
+        n1:    [1, 2, 3, 3, 5, 6, 7, 8, 8, 0]
+    };
+
+    function getRandomFromStats(key) {
+        const pool = stats[key];
+        return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function generateTickets(count) {
+        const area = document.getElementById('result-area');
+        area.innerHTML = ''; // 초기화
+
+        for (let i = 0; i < count; i++) {
+            const ticket = document.createElement('div');
+            ticket.className = 'ticket trace-effect';
+            
+            const group = getRandomFromStats('group');
+            const n100k = getRandomFromStats('n100k');
+            const n10k = getRandomFromStats('n10k');
+            const n1k = getRandomFromStats('n1k');
+            const n100 = getRandomFromStats('n100');
+            const n10 = getRandomFromStats('n10');
+            const n1 = getRandomFromStats('n1');
+
+            ticket.innerHTML = `
+                <span class="group-tag">${group}조</span>
+                <div class="ball n100k">${n100k}</div>
+                <div class="ball n10k">${n10k}</div>
+                <div class="ball n1k">${n1k}</div>
+                <div class="ball n100">${n100}</div>
+                <div class="ball n10">${n10}</div>
+                <div class="ball n1">${n1}</div>
+            `;
+            area.appendChild(ticket);
+        }
+    }
+</script>
+
+</body>
+</html>
